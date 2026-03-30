@@ -40,10 +40,12 @@ class NetworkTool:
 
 
     # Q3: What is the benefit of using @property and @target.setter?
-    # The @property lets you access target like an attribute while still using a method behind the scenes. 
-    # The @target.setter lets you control and validate any new value before it is saved, which helps prevent invalid data 
-    # such as an empty string. Together, they hide the internal implementation and make the class easier and safer to use. 
-    # They also let you change how target is stored later without breaking code that uses the class.
+    """
+    The @property lets you access target like an attribute while still using a method behind the scenes. 
+    The @target.setter lets you control and validate any new value before it is saved, which helps prevent invalid data 
+    such as an empty string. Together, they hide the internal implementation and make the class easier and safer to use. 
+    They also let you change how target is stored later without breaking code that uses the class.
+    """
     @property
     def target(self):
         return self.__target
@@ -61,13 +63,15 @@ class NetworkTool:
 
 
 # Q1: How does PortScanner reuse code from NetworkTool?
-# The PortScanner reuses code from NetworkTool by inheriting from it, so it automatically gets the target property 
-# and its getter/setter behavior.
-# In PortScanner.__init__(), super().__init__(target) calls the parent constructor, 
-# so target setup is done once in `NetworkTool` instead of being duplicated. 
-# It also calls super().__del__() in its destructor, which reuses parent cleanup behavior and 
-# shows how child classes can extend, not rewrite, shared functionality.
-# PortScanner child class that inherits from NetworkTool
+"""
+The PortScanner reuses code from NetworkTool by inheriting from it, so it automatically gets the target property 
+and its getter/setter behavior.
+In PortScanner.__init__(), super().__init__(target) calls the parent constructor, 
+so target setup is done once in `NetworkTool` instead of being duplicated. 
+It also calls super().__del__() in its destructor, which reuses parent cleanup behavior and 
+shows how child classes can extend, not rewrite, shared functionality.
+PortScanner child class that inherits from NetworkTool
+"""
 class PortScanner(NetworkTool):
     def __init__(self, target: str):
         super().__init__(target)
@@ -80,13 +84,15 @@ class PortScanner(NetworkTool):
 
     def scan_port(self, port):
         # Q4: What would happen without try-except here?
-        # Without try-except, any socket-related error like DNS resolution failure, connection reset, 
-        # or timeout issues would raise an exception and stop that thread abruptly. 
-        # In a threaded scan, this means some ports may never be recorded in scan_results, giving incomplete 
-        # or misleading output. You would also lose the helpful per-port error message, 
-        # so diagnosing which port failed and why becomes harder. Finally, if an exception occurs 
-        # before normal completion, cleanup becomes less reliable unless finally is still present, 
-        # which can lead to socket or resource handling problems.        
+        """
+        Without try-except, any socket-related error like DNS resolution failure, connection reset,
+        or timeout issues would raise an exception and stop that thread abruptly.
+        In a threaded scan, this means some ports may never be recorded in scan_results, giving incomplete
+        or misleading output. You would also lose the helpful per-port error message,
+        so diagnosing which port failed and why becomes harder. Finally, if an exception occurs
+        before normal completion, cleanup becomes less reliable unless finally is still present,
+        which can lead to socket or resource handling problems.
+        """
         try:
             sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             sock.settimeout(1)
@@ -111,11 +117,13 @@ class PortScanner(NetworkTool):
         return [result for result in self.scan_results if result[1] == "Open"]
         
         # Q2: Why do we use threading instead of scanning one port at a time?
-        # We use threading because port scanning is mostly network I/O, and each connection attempt spends time 
-        # waiting for a response or timeout. If we scan one port at a time, those waits happen sequentially, 
-        # making the scan much slower. With threads, many ports are checked at once, so waiting on one port 
-        # does not block progress on others. This makes scans finish faster and gives results sooner, 
-        # especially when scanning large port ranges or hosts with many closed or filtered ports.
+        """
+        We use threading because port scanning is mostly network I/O, and each connection attempt spends time 
+        waiting for a response or timeout. If we scan one port at a time, those waits happen sequentially, 
+        making the scan much slower. With threads, many ports are checked at once, so waiting on one port 
+        does not block progress on others. This makes scans finish faster and gives results sooner, 
+        especially when scanning large port ranges or hosts with many closed or filtered ports.
+        """
     def scan_range(self, start_port, end_port):
         threads = []
         # Using end_port + 1 to ensure the final port in the range is scanned
@@ -268,10 +276,12 @@ if __name__ == "__main__":
 
 
 # Q5: New Feature Proposal
-# I would add a Port Range Presets feature that allows users to select predefined port ranges 
-# like "Web Services", "Mail Services", or "Database Services" instead of manually typing port numbers. 
-# When the user selects a preset, the program would scan all commonly associated ports for that category without 
-# requiring individual port input. This makes scanning faster and more focused for specific security assessments.
-# The nested if-statements check the user's preset selection and filter common_ports to extract only 
-# the relevant service ports, eliminating manual port entry for common scenarios.
-# Diagram: See diagram_101579615.png in the repository root
+"""
+I would add a Port Range Presets feature that allows users to select predefined port ranges 
+like "Web Services", "Mail Services", or "Database Services" instead of manually typing port numbers. 
+When the user selects a preset, the program would scan all commonly associated ports for that category without 
+requiring individual port input. This makes scanning faster and more focused for specific security assessments.
+The nested if-statements check the user's preset selection and filter common_ports to extract only 
+the relevant service ports, eliminating manual port entry for common scenarios.
+Diagram: See diagram_101579615.png in the repository root
+"""
